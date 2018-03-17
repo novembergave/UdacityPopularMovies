@@ -1,18 +1,23 @@
 package com.novembergave.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.novembergave.popularmovies.NetworkUtils.FetchMovieAsyncTask;
 import com.novembergave.popularmovies.POJO.Movie;
+import com.novembergave.popularmovies.Preferences.PreferenceDialog;
 import com.novembergave.popularmovies.RecyclerViewUtils.MainAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +25,31 @@ public class MainActivity extends AppCompatActivity {
   private RecyclerView recyclerView;
   private ProgressBar progressBar;
   private MainAdapter adapter;
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.sort_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle item selection
+    switch (item.getItemId()) {
+      case R.id.sort:
+        openSettingsDialog();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
+  private void openSettingsDialog() {
+    PreferenceDialog dialog = new PreferenceDialog();
+    dialog.setPreferenceListener(item -> getMoviesFromTMDb(getString(R.string.sort_popularity)));
+    dialog.show(getFragmentManager(), "Test");
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
    * <p/>
    * If the device has no connectivity it will display a Toast explaining that app needs
    * Internet to work properly.
-   *
    */
   private void getMoviesFromTMDb(String sortMethod) {
     if (isNetworkAvailable()) {

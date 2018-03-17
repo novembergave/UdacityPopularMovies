@@ -33,12 +33,12 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
   /**
    * TMDb API key
    */
-  private final String mApiKey;
+  private final String apiKey;
 
   /**
    * Interface / listener
    */
-  private final OnTaskCompleted mListener;
+  private final OnTaskCompleted listener;
 
   /**
    * Constructor
@@ -49,8 +49,8 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
   public FetchMovieAsyncTask(OnTaskCompleted listener, String apiKey) {
     super();
 
-    mListener = listener;
-    mApiKey = apiKey;
+    this.listener = listener;
+    this.apiKey = apiKey;
   }
 
   @Override
@@ -59,10 +59,10 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
     BufferedReader reader = null;
 
     // Holds data returned from the API
-    String moviesJsonStr = null;
+    String moviesJsonStr;
 
     try {
-      URL url = getApiUrl();
+      URL url = getApiUrl(params);
 
       // Start connecting to get JSON
       urlConnection = (HttpURLConnection) url.openConnection();
@@ -164,12 +164,14 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
    *
    * @return URL formatted with parameters for the API
    */
-  private URL getApiUrl() throws MalformedURLException {
-    final String TMDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
+  private URL getApiUrl(String[] parameters) throws MalformedURLException {
+    final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
+    final String SORT_BY_PARAM = "sort_by";
     final String API_KEY_PARAM = "api_key";
 
-    Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
-        .appendQueryParameter(API_KEY_PARAM, mApiKey)
+    Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+        .appendQueryParameter(SORT_BY_PARAM, parameters[0])
+        .appendQueryParameter(API_KEY_PARAM, apiKey)
         .build();
 
     return new URL(builtUri.toString());
@@ -180,6 +182,6 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
     super.onPostExecute(movies);
 
     // Notify UI
-    mListener.onFetchMoviesTaskCompleted(movies);
+    listener.onFetchMoviesTaskCompleted(movies);
   }
 }

@@ -33,7 +33,11 @@ public class MainActivity extends AppCompatActivity {
     adapter = new MainAdapter(this::clickListener);
     recyclerView.setAdapter(adapter);
 
-    getMoviesFromTMDb();
+    getMoviesFromTMDb(getSortMethod());
+  }
+
+  private String getSortMethod() {
+    return getString(R.string.sort_vote);
   }
 
   private void clickListener(Movie movie) {
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
    * Internet to work properly.
    *
    */
-  private void getMoviesFromTMDb() {
+  private void getMoviesFromTMDb(String sortMethod) {
     if (isNetworkAvailable()) {
       // Key needed to get data from TMDb
       String apiKey = getString(R.string.api_key);
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
       // Execute task
       FetchMovieAsyncTask movieTask = new FetchMovieAsyncTask(taskCompleted, apiKey);
-      movieTask.execute();
+      movieTask.execute(sortMethod);
     } else {
       Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
     }

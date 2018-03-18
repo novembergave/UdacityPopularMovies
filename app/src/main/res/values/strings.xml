@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
+    <string name="error_fetching_data">Error connecting. \nPlease check your internet connection.</string>
+    <string name="retry">Retry</string>
+
     <string name="sort_popularity">popularity.desc</string>
     <string name="sort_vote">vote_average.desc</string>
     <string name="sort">Sort</string>

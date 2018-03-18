@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import com.novembergave.popularmovies.POJO.Movie;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
@@ -39,7 +38,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
     return moviesList.size();
   }
 
-  public void setData(Movie[] moviesArray) {
-    moviesList = Arrays.asList(moviesArray);
+  public void setData(List<Movie> moviesArray) {
+    moviesList = moviesArray;
+    notifyDataSetChanged();
   }
 }

@@ -53,9 +53,4 @@ public class PreferenceDialog extends DialogFragment {
     preferenceListener.show(getString(R.string.sort_popularity));
   }
 
-//  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//      View v = inflater.inflate(R.layout.preferences_dialog, container, false);
-//      return v;
-//    }
-
 }

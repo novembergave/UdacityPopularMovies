@@ -1,7 +1,6 @@
 package com.novembergave.popularmovies;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -20,11 +20,19 @@ import com.novembergave.popularmovies.POJO.Movie;
 import com.novembergave.popularmovies.Preferences.PreferenceDialog;
 import com.novembergave.popularmovies.RecyclerViewUtils.MainAdapter;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+  private static final int SHOW_LOADING_VIEW = 0;
+  private static final int SHOW_ERROR_VIEW = 1;
+  private static final int SHOW_RESULT_VIEW = 2;
+
 
   private RecyclerView recyclerView;
   private ProgressBar progressBar;
   private MainAdapter adapter;
+  private View errorView;
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void openSettingsDialog() {
     PreferenceDialog dialog = new PreferenceDialog();
-    dialog.setPreferenceListener(item -> getMoviesFromTMDb(getString(R.string.sort_popularity)));
+    dialog.setPreferenceListener(item -> getMovies(getString(R.string.sort_popularity)));
     dialog.show(getFragmentManager(), "Test");
   }
 
@@ -57,13 +65,16 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     progressBar = findViewById(R.id.main_progress_bar);
-    recyclerView = findViewById(R.id.main_recycler_view);
+    errorView = findViewById(R.id.main_error_view);
+    Button retryButton = findViewById(R.id.main_retry_button);
+    retryButton.setOnClickListener(click -> getMovies(getSortMethod()));
 
+    recyclerView = findViewById(R.id.main_recycler_view);
     recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     adapter = new MainAdapter(this::clickListener);
     recyclerView.setAdapter(adapter);
 
-    getMoviesFromTMDb(getSortMethod());
+    getMovies(getSortMethod());
   }
 
   private String getSortMethod() {
@@ -75,33 +86,52 @@ public class MainActivity extends AppCompatActivity {
     // open new activity
   }
 
-  /**
-   * If device has Internet the magic happens when app launches. The app will start the process
-   * of collecting data from the API and present it to the user.
-   * <p/>
-   * If the device has no connectivity it will display a Toast explaining that app needs
-   * Internet to work properly.
-   */
-  private void getMoviesFromTMDb(String sortMethod) {
+  private void getMovies(String sortMethod) {
+    setViewsVisibility(SHOW_LOADING_VIEW);
+
     if (isNetworkAvailable()) {
-      // Key needed to get data from TMDb
+      // Key needed to get data from TMDb TODO: Set your key to the string file
       String apiKey = getString(R.string.api_key);
 
       // Listener for when AsyncTask is ready to update UI
-      FetchMovieAsyncTask.OnTaskCompleted taskCompleted = new FetchMovieAsyncTask.OnTaskCompleted() {
-        @Override
-        public void onFetchMoviesTaskCompleted(Movie[] movies) {
-          progressBar.setVisibility(View.GONE);
-          recyclerView.setVisibility(View.VISIBLE);
-          adapter.setData(movies);
-        }
-      };
+      FetchMovieAsyncTask.OnTaskCompleted taskCompleted = this::displayResult;
 
       // Execute task
       FetchMovieAsyncTask movieTask = new FetchMovieAsyncTask(taskCompleted, apiKey);
       movieTask.execute(sortMethod);
     } else {
-      Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
+      setViewsVisibility(SHOW_ERROR_VIEW);
+    }
+  }
+
+  private void displayResult(List<Movie> movies) {
+    setViewsVisibility(SHOW_RESULT_VIEW);
+    // As the result it nullable, check and display the correct view to prevent crashes
+    if (movies != null) {
+      adapter.setData(movies);
+    } else {
+      setViewsVisibility(SHOW_ERROR_VIEW);
+    }
+  }
+
+  private void setViewsVisibility(int viewToShow) {
+    switch (viewToShow) {
+      case SHOW_LOADING_VIEW:
+        progressBar.setVisibility(View.VISIBLE);
+        errorView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        break;
+      case SHOW_RESULT_VIEW:
+        progressBar.setVisibility(View.GONE);
+        errorView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        break;
+      default:
+      case SHOW_ERROR_VIEW:
+        progressBar.setVisibility(View.GONE);
+        errorView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        break;
     }
   }
 

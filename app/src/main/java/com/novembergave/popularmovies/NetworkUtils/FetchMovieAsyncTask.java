@@ -18,34 +18,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
+public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
 
   public interface OnTaskCompleted {
-    void onFetchMoviesTaskCompleted(Movie[] movies);
+    void onFetchMoviesTaskCompleted(List<Movie> movies);
   }
 
-  /**
-   * For logging purposes
-   */
   private final String LOG_TAG = FetchMovieAsyncTask.class.getSimpleName();
-
-  /**
-   * TMDb API key
-   */
   private final String apiKey;
-
-  /**
-   * Interface / listener
-   */
   private final OnTaskCompleted listener;
 
-  /**
-   * Constructor
-   *
-   * @param listener UI listener
-   * @param apiKey TMDb API key
-   */
   public FetchMovieAsyncTask(OnTaskCompleted listener, String apiKey) {
     super();
 
@@ -54,7 +39,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
   }
 
   @Override
-  protected Movie[] doInBackground(String... params) {
+  protected List<Movie> doInBackground(String... params) {
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
 
@@ -79,13 +64,11 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
 
       String line;
       while ((line = reader.readLine()) != null) {
-        // Adds '\n' at last line if not already there.
-        // This supposedly makes it easier to debug.
         builder.append(line).append("\n");
       }
 
       if (builder.length() == 0) {
-        // No data found. Nothing more to do here.
+        // No data found. Return null
         return null;
       }
 
@@ -94,7 +77,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
       Log.e(LOG_TAG, "Error ", e);
       return null;
     } finally {
-      // Tidy up: release url connection and buffered reader
+      // Release url connection and buffered reader
       if (urlConnection != null) {
         urlConnection.disconnect();
       }
@@ -108,8 +91,8 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
     }
 
     try {
-      // Make sense of the JSON data
-      return getMoviesDataFromJson(moviesJsonStr);
+      // Parse the JSON
+      return parseJson(moviesJsonStr);
     } catch (JSONException e) {
       Log.e(LOG_TAG, e.getMessage(), e);
       e.printStackTrace();
@@ -119,12 +102,9 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
   }
 
   /**
-   * Extracts data from the JSON object and returns an Array of movie objects.
-   *
-   * @param moviesJsonStr JSON string to be traversed
-   * @return Array of Movie objects
+   * Extracts data from the JSON object and returns an Arraylist of movie objects.
    */
-  private Movie[] getMoviesDataFromJson(String moviesJsonStr) throws JSONException {
+  private List<Movie> parseJson(String moviesJsonStr) throws JSONException {
     // JSON tags
     final String TAG_RESULTS = "results";
     final String TAG_ORIGINAL_TITLE = "original_title";
@@ -133,27 +113,29 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
     final String TAG_VOTE_AVERAGE = "vote_average";
     final String TAG_RELEASE_DATE = "release_date";
 
-    // Get the array containing hte movies found
+    // Get the array containing the movies found
     JSONObject moviesJson = new JSONObject(moviesJsonStr);
     JSONArray resultsArray = moviesJson.getJSONArray(TAG_RESULTS);
 
-    // Create array of Movie objects that stores data from the JSON string
-    Movie[] movies = new Movie[resultsArray.length()];
+    // Create arraylist of Movie objects that stores data from the JSON string
+    List<Movie> movies = new ArrayList<>();
 
-    // Traverse through movies one by one and get data
+    // Loop through movies and get data
     for (int i = 0; i < resultsArray.length(); i++) {
       // Initialize each object before it can be used
-      movies[i] = new Movie();
+      Movie movie = new Movie();
 
       // Object contains all tags we're looking for
       JSONObject movieInfo = resultsArray.getJSONObject(i);
 
       // Store data in movie object
-      movies[i].setTitle(movieInfo.getString(TAG_ORIGINAL_TITLE));
-      movies[i].setPosterPath(movieInfo.getString(TAG_POSTER_PATH));
-      movies[i].setOverview(movieInfo.getString(TAG_OVERVIEW));
-      movies[i].setAverageVote(movieInfo.getDouble(TAG_VOTE_AVERAGE));
-      movies[i].setReleaseDate(movieInfo.getString(TAG_RELEASE_DATE));
+      movie.setTitle(movieInfo.getString(TAG_ORIGINAL_TITLE));
+      movie.setPosterPath(movieInfo.getString(TAG_POSTER_PATH));
+      movie.setOverview(movieInfo.getString(TAG_OVERVIEW));
+      movie.setAverageVote(movieInfo.getDouble(TAG_VOTE_AVERAGE));
+      movie.setReleaseDate(movieInfo.getString(TAG_RELEASE_DATE));
+      // Add this to the list
+      movies.add(movie);
     }
 
     return movies;
@@ -178,7 +160,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, Movie[]> {
   }
 
   @Override
-  protected void onPostExecute(Movie[] movies) {
+  protected void onPostExecute(List<Movie> movies) {
     super.onPostExecute(movies);
 
     // Notify UI

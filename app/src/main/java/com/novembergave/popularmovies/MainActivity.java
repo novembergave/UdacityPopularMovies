@@ -3,8 +3,8 @@ package com.novembergave.popularmovies;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.novembergave.popularmovies.NetworkUtils.FetchMovieAsyncTask;
 import com.novembergave.popularmovies.POJO.Movie;
 import com.novembergave.popularmovies.Preferences.PreferenceDialog;
+import com.novembergave.popularmovies.Preferences.SharedPreferencesUtils;
 import com.novembergave.popularmovies.RecyclerViewUtils.MainAdapter;
 
 import java.util.List;
@@ -55,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
   private void openSettingsDialog() {
     PreferenceDialog dialog = new PreferenceDialog();
-    dialog.setPreferenceListener(item -> getMovies(getString(R.string.sort_popularity)));
-    dialog.show(getFragmentManager(), "Test");
+    dialog.setPreferenceListener(() -> getMovies(getSortMethod()));
+    dialog.show(getFragmentManager(), "dialog");
   }
 
   @Override
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private String getSortMethod() {
-    return getString(R.string.sort_vote);
+    return SharedPreferencesUtils.getSortingPreference(this);
   }
 
   private void clickListener(Movie movie) {
@@ -139,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
     ConnectivityManager connectivityManager
         = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-
     return activeNetworkInfo != null && activeNetworkInfo.isConnected();
   }
 }

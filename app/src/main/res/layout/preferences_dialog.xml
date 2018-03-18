@@ -14,22 +14,40 @@
             android:text="@string/sort_by"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/spinner"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             />
 
-    <Spinner
-            android:id="@+id/spinner"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+    <RadioGroup
+            android:id="@+id/sort_radio_group"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/sort_by_label"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/sort_by_label"
-            app:layout_constraintTop_toTopOf="@+id/sort_by_label"
-            />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sort_by_label"
+            app:layout_constraintVertical_bias="0.1"
+            >
+
+        <RadioButton
+                android:id="@+id/sort_popularity"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:checked="true"
+                android:text="@string/popularity"
+                />
+
+        <RadioButton
+                android:id="@+id/sort_number_votes"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/number_of_votes"
+                />
+
+    </RadioGroup>
 
 </android.support.constraint.ConstraintLayout>

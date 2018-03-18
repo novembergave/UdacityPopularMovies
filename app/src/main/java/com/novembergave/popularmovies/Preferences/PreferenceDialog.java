@@ -4,20 +4,19 @@ package com.novembergave.popularmovies.Preferences;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.RadioGroup;
 
 import com.novembergave.popularmovies.R;
 
 public class PreferenceDialog extends DialogFragment {
 
+  private RadioGroup selectionGroup;
+
   public interface OnConfirmPreference {
-    void show(String preference);
+    void show();
   }
 
   private OnConfirmPreference preferenceListener;
@@ -33,9 +32,10 @@ public class PreferenceDialog extends DialogFragment {
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     LayoutInflater layoutInflater = getActivity().getLayoutInflater();
     View view = layoutInflater.inflate(R.layout.preferences_dialog, null);
-    Spinner spinner = view.findViewById(R.id.spinner);
-    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.sort_options));
-    spinner.setAdapter(arrayAdapter);
+    selectionGroup = view.findViewById(R.id.sort_radio_group);
+    selectionGroup.check(SharedPreferencesUtils.getSortingPreference(getActivity())
+        .equals(SharedPreferencesUtils.PREF_SORTING_POPULARITY) ?
+        R.id.sort_popularity : R.id.sort_number_votes);
 
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder
@@ -43,14 +43,17 @@ public class PreferenceDialog extends DialogFragment {
         .setView(view)
         .setNegativeButton(android.R.string.cancel, (a, b) -> a.cancel())
         .setPositiveButton(android.R.string.ok, (a, b) -> {
-          doSomething();
+          updatePreferences();
           a.dismiss();
         });
     return builder.create();
   }
 
-  private void doSomething() {
-    preferenceListener.show(getString(R.string.sort_popularity));
+  private void updatePreferences() {
+    int checkedRadioButtonId = selectionGroup.getCheckedRadioButtonId();
+    SharedPreferencesUtils.updateSortingPreference(getActivity(), checkedRadioButtonId == R.id.sort_popularity ?
+        SharedPreferencesUtils.PREF_SORTING_POPULARITY :
+        SharedPreferencesUtils.PREF_SORTING_VOTES);
+    preferenceListener.show();
   }
-
 }

@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.novembergave.popularmovies.NetworkUtils.FetchMovieAsyncTask;
 import com.novembergave.popularmovies.POJO.Movie;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     recyclerView = findViewById(R.id.main_recycler_view);
     recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-    adapter = new MainAdapter(this::clickListener);
+    adapter = new MainAdapter(this::openDetailView);
     recyclerView.setAdapter(adapter);
 
     getMovies(getSortMethod());
@@ -82,9 +81,8 @@ public class MainActivity extends AppCompatActivity {
     return SharedPreferencesUtils.getSortingPreference(this);
   }
 
-  private void clickListener(Movie movie) {
-    Toast.makeText(this, movie.getTitle(), Toast.LENGTH_SHORT).show();
-    // open new activity
+  private void openDetailView(Movie movie) {
+    startActivity(DetailActivity.launchDetailActivity(this, movie));
   }
 
   private void getMovies(String sortMethod) {

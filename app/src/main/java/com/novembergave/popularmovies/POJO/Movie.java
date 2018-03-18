@@ -1,9 +1,10 @@
 package com.novembergave.popularmovies.POJO;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Movie {
+public class Movie implements Serializable {
 
   private String title;
   private String posterPath;

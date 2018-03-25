@@ -11,7 +11,7 @@
 
     <android.support.design.widget.AppBarLayout
             android:id="@+id/detail_app_bar"
-            android:layout_height="340dp"
+            android:layout_height="200dp"
             android:layout_width="match_parent"
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -62,25 +62,45 @@
                 >
 
             <TextView
-                    android:id="@+id/detail_date"
+                    android:id="@+id/detail_release_label"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:lineSpacingExtra="8dp"
+                    android:layout_width="wrap_content"
+                    android:gravity="start"
                     android:padding="16dp"
-                    android:textSize="20sp"
+                    android:text="@string/release_date"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
+
             <TextView
-                    android:id="@+id/detail_overview"
+                    android:id="@+id/detail_date"
+                    style="@style/TextAppearance.AppCompat.Body2"
                     android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:lineSpacingExtra="8dp"
                     android:padding="16dp"
-                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@id/detail_release_label"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/detail_release_label"
+                    app:layout_constraintTop_toTopOf="@id/detail_release_label"
+                    tools:text="@tools:sample/date/ddmmyy"
+                    />
+
+            <TextView
+                    android:id="@+id/detail_rating_label"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:gravity="start"
+                    android:padding="16dp"
+                    android:text="@string/user_rating"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/detail_date"
                     />
@@ -93,9 +113,43 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:stepSize="0.5"
+                    app:layout_constraintBottom_toBottomOf="@id/detail_rating_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/detail_rating_label"
+                    app:layout_constraintTop_toTopOf="@id/detail_rating_label"
+                    />
+
+            <TextView
+                    android:id="@+id/detail_overview_label"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:gravity="start"
+                    android:lineSpacingExtra="8dp"
+                    android:padding="16dp"
+                    android:text="@string/overview"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/detail_rating_label"
+                    />
+
+            <TextView
+                    android:id="@+id/detail_overview"
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:gravity="start|top"
+                    android:paddingBottom="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/detail_overview"
+                    app:layout_constraintTop_toBottomOf="@id/detail_overview_label"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="some text here"
                     />
 
         </android.support.constraint.ConstraintLayout>

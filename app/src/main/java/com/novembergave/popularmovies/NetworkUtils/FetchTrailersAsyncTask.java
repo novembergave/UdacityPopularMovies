@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getApiUrl;
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getPopularApiUrl;
 
 public class FetchTrailersAsyncTask extends AsyncTask<String, Void, List<Trailer>> {
 
@@ -47,7 +47,7 @@ public class FetchTrailersAsyncTask extends AsyncTask<String, Void, List<Trailer
     String moviesJsonStr;
 
     try {
-      URL url = getApiUrl(params, apiKey);
+      URL url = getPopularApiUrl();
 
       // Start connecting to get JSON
       urlConnection = (HttpURLConnection) url.openConnection();

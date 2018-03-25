@@ -4,7 +4,6 @@ package com.novembergave.popularmovies.NetworkUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.novembergave.popularmovies.BuildConfig;
 import com.novembergave.popularmovies.POJO.Movie;
 
 import org.json.JSONArray;
@@ -20,13 +19,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getPopularApiUrl;
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getTopRatedApiUrl;
 import static com.novembergave.popularmovies.Preferences.SharedPreferencesUtils.PREF_SORTING_POPULARITY;
 
-import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getApiUrl;
-
 public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
-
-  private static final String API_KEY = BuildConfig.API_KEY;
 
   public interface OnTaskCompleted {
     void onFetchMoviesTaskCompleted(List<Movie> movies);

@@ -4,32 +4,44 @@ package com.novembergave.popularmovies.NetworkUtils;
 import android.net.Uri;
 import android.util.Log;
 
+import com.novembergave.popularmovies.BuildConfig;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class UrlUtils {
 
   private final static String LOG_TAG = UrlUtils.class.getSimpleName();
+  private static final String API_KEY = BuildConfig.API_KEY;
 
   /**
    * Creates and returns an URL.
    *
    * @return URL formatted with parameters for the API
    */
-  public static URL getApiUrl(String[] parameters, String apiKey) throws MalformedURLException {
-    final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
-    final String SORT_BY_PARAM = "sort_by";
+  public static URL getPopularApiUrl() throws MalformedURLException {
+    final String BASE_URL = "https://api.themoviedb.org/3/movie/popular?";
     final String API_KEY_PARAM = "api_key";
 
     Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-        .appendQueryParameter(SORT_BY_PARAM, parameters[0])
-        .appendQueryParameter(API_KEY_PARAM, apiKey)
+        .appendQueryParameter(API_KEY_PARAM, API_KEY)
         .build();
 
     return new URL(builtUri.toString());
   }
 
-  public static URL getTrailersUrl(long id, String apiKey) {
+  public static URL getTopRatedApiUrl() throws MalformedURLException {
+    final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated?";
+    final String API_KEY_PARAM = "api_key";
+
+    Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+        .appendQueryParameter(API_KEY_PARAM, API_KEY)
+        .build();
+
+    return new URL(builtUri.toString());
+  }
+
+  public static URL getTrailersUrl(long id) {
     String API_BASE_URL = "http://api.themoviedb.org/3/movie/";
     String API_PARAM_KEY = "api_key";
     String API_TRAILERS_PATH = "videos";
@@ -37,7 +49,7 @@ public class UrlUtils {
     Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
         .appendPath(Long.toString(id))
         .appendPath(API_TRAILERS_PATH)
-        .appendQueryParameter(API_PARAM_KEY, apiKey)
+        .appendQueryParameter(API_PARAM_KEY, API_KEY)
         .build();
 
     Log.d(LOG_TAG, "Query URI: " + builtUri.toString());
@@ -52,7 +64,7 @@ public class UrlUtils {
     return url;
   }
 
-  public static URL getReviewsUrl(long id, String apiKey) {
+  public static URL getReviewsUrl(long id) {
     String API_BASE_URL = "http://api.themoviedb.org/3/movie/";
     String API_PARAM_KEY = "api_key";
     String API_REVIEWS_PATH = "reviews";
@@ -60,7 +72,7 @@ public class UrlUtils {
     Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
         .appendPath(Long.toString(id))
         .appendPath(API_REVIEWS_PATH)
-        .appendQueryParameter(API_PARAM_KEY, apiKey)
+        .appendQueryParameter(API_PARAM_KEY, API_KEY)
         .build();
 
     Log.d(LOG_TAG, "Query URI: " + builtUri.toString());

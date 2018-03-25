@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.novembergave.popularmovies.Preferences.SharedPreferencesUtils.PREF_SORTING_POPULARITY;
+
 public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
 
   public interface OnTaskCompleted {
@@ -47,7 +49,15 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
     String moviesJsonStr;
 
     try {
-      URL url = getApiUrl(params);
+      URL url;
+      // try to obtain the user's preference
+      if (params.length == 1) {
+        url = params[0].equals(PREF_SORTING_POPULARITY) ? getPopularApiUrl() : getTopRatedApiUrl();
+      } else {
+        // default to getting the popular Api and log as exception
+        url = getPopularApiUrl();
+        Log.e(LOG_TAG, "Error changing query ");
+      }
 
       // Start connecting to get JSON
       urlConnection = (HttpURLConnection) url.openConnection();
@@ -146,13 +156,22 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
    *
    * @return URL formatted with parameters for the API
    */
-  private URL getApiUrl(String[] parameters) throws MalformedURLException {
-    final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
-    final String SORT_BY_PARAM = "sort_by";
+  private URL getPopularApiUrl() throws MalformedURLException {
+    final String BASE_URL = "https://api.themoviedb.org/3/movie/popular?";
     final String API_KEY_PARAM = "api_key";
 
     Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-        .appendQueryParameter(SORT_BY_PARAM, parameters[0])
+        .appendQueryParameter(API_KEY_PARAM, apiKey)
+        .build();
+
+    return new URL(builtUri.toString());
+  }
+
+  private URL getTopRatedApiUrl() throws MalformedURLException {
+    final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated?";
+    final String API_KEY_PARAM = "api_key";
+
+    Uri builtUri = Uri.parse(BASE_URL).buildUpon()
         .appendQueryParameter(API_KEY_PARAM, apiKey)
         .build();
 

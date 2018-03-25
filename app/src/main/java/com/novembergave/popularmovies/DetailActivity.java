@@ -59,7 +59,7 @@ public class DetailActivity extends AppCompatActivity {
   }
 
   private void setUpView() {
-    Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
+    Movie movie = (Movie) getIntent().getParcelableExtra(EXTRA_MOVIE);
     // set title
     layout.setTitle(movie.getTitle());
     // populate the image in both app bar and poster image

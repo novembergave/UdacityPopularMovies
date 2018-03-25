@@ -9,8 +9,8 @@ public class SharedPreferencesUtils {
   private static final String KEY = "shared_prefs";
   private static final String PREF_SORTING = "pref_sorting";
 
-  static final String PREF_SORTING_POPULARITY = "popularity.desc";
-  static final String PREF_SORTING_VOTES = "vote_average.desc";
+  public static final String PREF_SORTING_POPULARITY = "popularity.desc";
+  public static final String PREF_SORTING_VOTES = "vote_average.desc";
 
   private static SharedPreferences getSharedPreferences(Context context) {
     return context.getSharedPreferences(KEY, Context.MODE_PRIVATE);

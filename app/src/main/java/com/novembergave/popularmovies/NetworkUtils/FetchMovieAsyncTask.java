@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.novembergave.popularmovies.BuildConfig;
 import com.novembergave.popularmovies.POJO.Movie;
 
 import org.json.JSONArray;
@@ -25,19 +26,19 @@ import static com.novembergave.popularmovies.Preferences.SharedPreferencesUtils.
 
 public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
 
+  private static final String API_KEY = BuildConfig.API_KEY;
+
   public interface OnTaskCompleted {
     void onFetchMoviesTaskCompleted(List<Movie> movies);
   }
 
   private final String LOG_TAG = FetchMovieAsyncTask.class.getSimpleName();
-  private final String apiKey;
   private final OnTaskCompleted listener;
 
-  public FetchMovieAsyncTask(OnTaskCompleted listener, String apiKey) {
+  public FetchMovieAsyncTask(OnTaskCompleted listener) {
     super();
 
     this.listener = listener;
-    this.apiKey = apiKey;
   }
 
   @Override
@@ -161,7 +162,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
     final String API_KEY_PARAM = "api_key";
 
     Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-        .appendQueryParameter(API_KEY_PARAM, apiKey)
+        .appendQueryParameter(API_KEY_PARAM, API_KEY)
         .build();
 
     return new URL(builtUri.toString());
@@ -172,7 +173,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
     final String API_KEY_PARAM = "api_key";
 
     Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-        .appendQueryParameter(API_KEY_PARAM, apiKey)
+        .appendQueryParameter(API_KEY_PARAM, API_KEY)
         .build();
 
     return new URL(builtUri.toString());

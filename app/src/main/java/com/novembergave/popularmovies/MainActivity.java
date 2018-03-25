@@ -89,14 +89,11 @@ public class MainActivity extends AppCompatActivity {
     setViewsVisibility(SHOW_LOADING_VIEW);
 
     if (isNetworkAvailable()) {
-      // Key needed to get data from TMDb TODO: Set your key to the string file
-      String apiKey = getString(R.string.api_key);
-
       // Listener for when AsyncTask is ready to update UI
       FetchMovieAsyncTask.OnTaskCompleted taskCompleted = this::displayResult;
 
       // Execute task
-      FetchMovieAsyncTask movieTask = new FetchMovieAsyncTask(taskCompleted, apiKey);
+      FetchMovieAsyncTask movieTask = new FetchMovieAsyncTask(taskCompleted);
       movieTask.execute(sortMethod);
     } else {
       setViewsVisibility(SHOW_ERROR_VIEW);

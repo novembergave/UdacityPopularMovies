@@ -4,8 +4,7 @@ package com.novembergave.popularmovies.NetworkUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.novembergave.popularmovies.BuildConfig;
-import com.novembergave.popularmovies.POJO.Movie;
+import com.novembergave.popularmovies.POJO.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,29 +19,27 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.novembergave.popularmovies.Preferences.SharedPreferencesUtils.PREF_SORTING_POPULARITY;
-
 import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getApiUrl;
 
-public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
-
-  private static final String API_KEY = BuildConfig.API_KEY;
+public class FetchTrailersAsyncTask extends AsyncTask<String, Void, List<Trailer>> {
 
   public interface OnTaskCompleted {
-    void onFetchMoviesTaskCompleted(List<Movie> movies);
+    void onFetchTrailersTaskCompleted(List<Trailer> trailers);
   }
 
-  private final String LOG_TAG = FetchMovieAsyncTask.class.getSimpleName();
+  private final String LOG_TAG = FetchTrailersAsyncTask.class.getSimpleName();
+  private final String apiKey;
   private final OnTaskCompleted listener;
 
-  public FetchMovieAsyncTask(OnTaskCompleted listener) {
+  public FetchTrailersAsyncTask(OnTaskCompleted listener, String apiKey) {
     super();
 
     this.listener = listener;
+    this.apiKey = apiKey;
   }
 
   @Override
-  protected List<Movie> doInBackground(String... params) {
+  protected List<Trailer> doInBackground(String... params) {
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
 
@@ -50,15 +47,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
     String moviesJsonStr;
 
     try {
-      URL url;
-      // try to obtain the user's preference
-      if (params.length == 1) {
-        url = params[0].equals(PREF_SORTING_POPULARITY) ? getPopularApiUrl() : getTopRatedApiUrl();
-      } else {
-        // default to getting the popular Api and log as exception
-        url = getPopularApiUrl();
-        Log.e(LOG_TAG, "Error changing query ");
-      }
+      URL url = getApiUrl(params, apiKey);
 
       // Start connecting to get JSON
       urlConnection = (HttpURLConnection) url.openConnection();
@@ -115,10 +104,9 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
   /**
    * Extracts data from the JSON object and returns an Arraylist of movie objects.
    */
-  private List<Movie> parseJson(String moviesJsonStr) throws JSONException {
+  private List<Trailer> parseJson(String moviesJsonStr) throws JSONException {
     // JSON tags
     final String TAG_RESULTS = "results";
-    final String TAG_ID = "id";
     final String TAG_ORIGINAL_TITLE = "original_title";
     final String TAG_POSTER_PATH = "poster_path";
     final String TAG_OVERVIEW = "overview";
@@ -131,24 +119,19 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
     JSONArray resultsArray = moviesJson.getJSONArray(TAG_RESULTS);
 
     // Create arraylist of Movie objects that stores data from the JSON string
-    List<Movie> movies = new ArrayList<>();
+    List<Trailer> movies = new ArrayList<>();
 
     // Loop through movies and get data
     for (int i = 0; i < resultsArray.length(); i++) {
       // Initialize each object before it can be used
-      Movie movie = new Movie();
+      Trailer movie = new Trailer();
 
       // Object contains all tags we're looking for
       JSONObject movieInfo = resultsArray.getJSONObject(i);
 
       // Store data in movie object
-      movie.setId(movieInfo.getLong(TAG_ID));
       movie.setTitle(movieInfo.getString(TAG_ORIGINAL_TITLE));
-      movie.setPosterPath(movieInfo.getString(TAG_POSTER_PATH));
-      movie.setOverview(movieInfo.getString(TAG_OVERVIEW));
-      movie.setAverageVote(movieInfo.getDouble(TAG_VOTE_AVERAGE));
-      movie.setReleaseDate(movieInfo.getString(TAG_RELEASE_DATE));
-      movie.setHasVideo(movieInfo.getBoolean(TAG_VIDEO));
+
       // Add this to the list
       movies.add(movie);
     }
@@ -157,10 +140,10 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
   }
 
   @Override
-  protected void onPostExecute(List<Movie> movies) {
+  protected void onPostExecute(List<Trailer> movies) {
     super.onPostExecute(movies);
 
     // Notify UI
-    listener.onFetchMoviesTaskCompleted(movies);
+    listener.onFetchTrailersTaskCompleted(movies);
   }
 }

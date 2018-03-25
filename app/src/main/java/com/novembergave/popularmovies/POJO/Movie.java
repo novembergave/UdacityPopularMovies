@@ -8,11 +8,21 @@ import java.util.Objects;
 
 public class Movie implements Parcelable {
 
+  private long id;
   private String title;
   private String posterPath;
   private String overview;
   private double averageVote;
   private String releaseDate;
+  private boolean hasVideo;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public String getTitle() {
     return title;
@@ -54,12 +64,22 @@ public class Movie implements Parcelable {
     this.releaseDate = releaseDate;
   }
 
+  public boolean isHasVideo() {
+    return hasVideo;
+  }
+
+  public void setHasVideo(boolean hasVideo) {
+    this.hasVideo = hasVideo;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Movie movie = (Movie) o;
-    return Double.compare(movie.averageVote, averageVote) == 0 &&
+    return id == movie.id &&
+        Double.compare(movie.averageVote, averageVote) == 0 &&
+        hasVideo == movie.hasVideo &&
         Objects.equals(title, movie.title) &&
         Objects.equals(posterPath, movie.posterPath) &&
         Objects.equals(overview, movie.overview) &&
@@ -68,17 +88,19 @@ public class Movie implements Parcelable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, posterPath, overview, averageVote, releaseDate);
+    return Objects.hash(id, title, posterPath, overview, averageVote, releaseDate, hasVideo);
   }
 
   @Override
   public String toString() {
     return "Movie{" +
-        "title='" + title + '\'' +
+        "id=" + id +
+        ", title='" + title + '\'' +
         ", posterPath='" + posterPath + '\'' +
         ", overview='" + overview + '\'' +
         ", averageVote=" + averageVote +
         ", releaseDate='" + releaseDate + '\'' +
+        ", hasVideo=" + hasVideo +
         '}';
   }
 

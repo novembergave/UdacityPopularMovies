@@ -4,12 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,9 +37,10 @@ import java.util.List;
 
 import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.isNetworkAvailable;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
   private static final String EXTRA_MOVIE = "extra_movie";
+  private static final int PERCENTAGE_TO_SHOW_IMAGE = 20;
 
   private CollapsingToolbarLayout layout;
   private ImageView displayImage;
@@ -43,6 +49,11 @@ public class DetailActivity extends AppCompatActivity {
   private RatingBar ratingBar;
   private View trailersHolder;
   private View reviewsHolder;
+  private AppBarLayout appbar;
+  private View fab;
+
+  private int maxScrollSize;
+  private boolean isImageHidden;
 
   public static Intent launchDetailActivity(Context context, Movie movie) {
     Intent intent = new Intent(context, DetailActivity.class);
@@ -64,7 +75,11 @@ public class DetailActivity extends AppCompatActivity {
     Toolbar toolbar = findViewById(R.id.detail_toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    appbar = findViewById(R.id.detail_app_bar);
+    appbar.addOnOffsetChangedListener(this);
 
+    fab = findViewById(R.id.detail_fab);
+    fab.setOnClickListener(click -> saveToFavourites());
     layout = findViewById(R.id.detail_collapsing_toolbar);
     displayImage = findViewById(R.id.detail_image);
     overViewText = findViewById(R.id.detail_overview);
@@ -164,5 +179,65 @@ public class DetailActivity extends AppCompatActivity {
 
   private void openTrailer(Trailer trailer) {
     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailer.getKey())));
+  }
+
+  @Override
+  public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+    // Handles animation of the floating action button and when it shows in the menu
+    if (maxScrollSize == 0)
+      maxScrollSize = appBarLayout.getTotalScrollRange();
+
+    int currentScrollPercentage = (Math.abs(verticalOffset)) * 100
+        / maxScrollSize;
+
+    if (currentScrollPercentage >= PERCENTAGE_TO_SHOW_IMAGE) {
+      if (!isImageHidden) {
+        isImageHidden = true;
+        ViewCompat.animate(fab).scaleY(0).scaleX(0).start();
+        invalidateOptionsMenu();
+      }
+    }
+
+    if (currentScrollPercentage < PERCENTAGE_TO_SHOW_IMAGE) {
+      if (isImageHidden) {
+        isImageHidden = false;
+        ViewCompat.animate(fab).scaleY(1).scaleX(1).start();
+        invalidateOptionsMenu();
+      }
+    }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.favourite_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    if (isImageHidden) {
+      menu.findItem(R.id.favourite).setVisible(true);
+    }
+    return super.onPrepareOptionsMenu(menu);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle item selection
+    switch (item.getItemId()) {
+      case R.id.favourite:
+        saveToFavourites();
+        item.setChecked(true); // TODO: This doesn't quite work
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
+  private void saveToFavourites() {
+    // Update UI to show it is saved
+    fab.setSelected(!fab.isSelected());
+    // Save to SQLite database
   }
 }

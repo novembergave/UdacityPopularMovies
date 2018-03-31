@@ -152,6 +152,75 @@
                     tools:text="some text here"
                     />
 
+            <LinearLayout
+                    android:id="@+id/detail_trailer_holder"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/detail_overview"
+                    tools:visibility="visible"
+                    >
+
+                <TextView
+                        android:id="@+id/detail_trailer_label"
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_gravity="top"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:gravity="start"
+                        android:lineSpacingExtra="8dp"
+                        android:padding="16dp"
+                        android:text="@string/trailers"
+                        />
+
+                <android.support.v7.widget.RecyclerView
+                        android:id="@+id/detail_trailer_recycler"
+                        android:layout_gravity="bottom"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        tools:listitem="@layout/item_video_holder"
+                        android:nestedScrollingEnabled="false"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/detail_review_holder"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/detail_trailer_holder"
+                    tools:visibility="visible"
+                    >
+
+                <TextView
+                        android:id="@+id/detail_review_label"
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:gravity="start"
+                        android:lineSpacingExtra="8dp"
+                        android:padding="16dp"
+                        android:text="@string/reviews"
+                        />
+
+                <android.support.v7.widget.RecyclerView
+                        android:id="@+id/detail_review_recycler"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:nestedScrollingEnabled="false"
+                        tools:listitem="@layout/item_review_holder"
+                        />
+            </LinearLayout>
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        >
+
+    <ImageView
+            android:id="@+id/item_comment_icon"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_comment_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
+            />
+
+    <TextView
+            android:id="@+id/item_comment_review"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_width="0dp"
+            android:gravity="start|top"
+            app:layout_constraintBottom_toTopOf="@+id/item_comment_reviewer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/item_comment_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Summertime 2016 has not been very kind to DC Comics-based personalities looking to shine consistently like their big screen Marvel Comics counterparts. Following the super-sized dud that was _Batman v. Superman: Dawn of Justice_ released a few months ago must really put some major pressure on Warner Bros. to gamble on ensuring that the presence of **Suicide Squad** does not meet the same kind of indifferent reception. Well, it turns out that although the anticipation was high for writer-director David Ayer's supervillain saga involving high-powered imprisoned rogues recruited as U.S. governmental operatives out to stop other skillful baddies (as it was for Zack Ryder's aforementioned "
+            />
+
+    <TextView
+            android:id="@+id/item_comment_reviewer"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:gravity="end|top"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/item_comment_icon"
+            app:layout_constraintTop_toBottomOf="@id/item_comment_review"
+            tools:text="Mr ABC Cheong"
+            />
+
+</android.support.constraint.ConstraintLayout>

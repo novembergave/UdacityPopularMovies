@@ -182,8 +182,8 @@
                         android:layout_gravity="bottom"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        tools:listitem="@layout/item_video_holder"
                         android:nestedScrollingEnabled="false"
+                        tools:listitem="@layout/item_video_holder"
                         />
 
             </LinearLayout>
@@ -218,6 +218,19 @@
                         android:layout_width="match_parent"
                         android:nestedScrollingEnabled="false"
                         tools:listitem="@layout/item_review_holder"
+                        />
+
+                <Button
+                        android:id="@+id/detail_review_show_more_button"
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:layout_gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:text="@string/show_more"
+                        android:visibility="gone"
                         />
             </LinearLayout>
 

@@ -2,6 +2,7 @@ package com.novembergave.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -34,7 +36,6 @@ public class DetailActivity extends AppCompatActivity {
 
   private static final String EXTRA_MOVIE = "extra_movie";
 
-  private Toolbar toolbar;
   private CollapsingToolbarLayout layout;
   private ImageView displayImage;
   private TextView overViewText;
@@ -60,7 +61,7 @@ public class DetailActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_detail);
 
-    toolbar = findViewById(R.id.detail_toolbar);
+    Toolbar toolbar = findViewById(R.id.detail_toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -130,11 +131,23 @@ public class DetailActivity extends AppCompatActivity {
   private void setReviews(List<Review> reviews) {
     if (reviews.size() > 0) {
       reviewsHolder.setVisibility(View.VISIBLE);
+      Button showMoreButton = findViewById(R.id.detail_review_show_more_button);
       RecyclerView reviewsRecycler = findViewById(R.id.detail_review_recycler);
       reviewsRecycler.setLayoutManager(new LinearLayoutManager(this));
       ReviewAdapter adapter = new ReviewAdapter();
       reviewsRecycler.setAdapter(adapter);
-      adapter.setData(reviews);
+      // Show only 3 reviews if there's more than 3 and show the show more button
+      if (reviews.size() > 3) {
+        adapter.setData(reviews.subList(0, 3));
+        showMoreButton.setVisibility(View.VISIBLE);
+        showMoreButton.setOnClickListener(click -> {
+          // display the full list and hide the show more button
+          adapter.setData(reviews);
+          showMoreButton.setVisibility(View.GONE);
+        });
+      } else {
+        adapter.setData(reviews);
+      }
     }
   }
 
@@ -149,8 +162,7 @@ public class DetailActivity extends AppCompatActivity {
     }
   }
 
-  private void openTrailer(Trailer click) {
-    // Do something
+  private void openTrailer(Trailer trailer) {
+    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailer.getKey())));
   }
-
 }

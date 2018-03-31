@@ -10,12 +10,21 @@ import android.text.format.DateUtils;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.novembergave.popularmovies.NetworkUtils.FetchReviewsAsyncTask;
+import com.novembergave.popularmovies.NetworkUtils.FetchTrailersAsyncTask;
 import com.novembergave.popularmovies.POJO.Movie;
+import com.novembergave.popularmovies.POJO.Review;
+import com.novembergave.popularmovies.POJO.Trailer;
 import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
+
+import java.util.List;
+
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.isNetworkAvailable;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -59,7 +68,7 @@ public class DetailActivity extends AppCompatActivity {
   }
 
   private void setUpView() {
-    Movie movie = (Movie) getIntent().getParcelableExtra(EXTRA_MOVIE);
+    Movie movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
     // set title
     layout.setTitle(movie.getTitle());
     // populate the image in both app bar and poster image
@@ -88,6 +97,36 @@ public class DetailActivity extends AppCompatActivity {
     // display the rating - returns on the scale of 10, so we'll need to divide to show scale of 5
     float averageVote = (float) movie.getAverageVote() / 2;
     ratingBar.setRating(averageVote);
+
+    fetchVideoAndReview(movie.getId());
+  }
+
+  private void fetchVideoAndReview(long id) {
+    if (isNetworkAvailable(this)) {
+      // Listener for when AsyncTask is ready to update UI
+      FetchReviewsAsyncTask.OnTaskCompleted taskCompleted = new FetchReviewsAsyncTask.OnTaskCompleted() {
+        @Override
+        public void onFetchReviewsTaskCompleted(List<Review> reviews) {
+          Toast.makeText(getBaseContext(), "Reviews" + reviews.toString(), Toast.LENGTH_SHORT).show();
+        }
+      };
+
+      // Execute task
+      FetchReviewsAsyncTask movieTask = new FetchReviewsAsyncTask(taskCompleted);
+      movieTask.execute(id);
+
+      // Listener for when AsyncTask is ready to update UI
+      FetchTrailersAsyncTask.OnTaskCompleted trailerCompleted = new FetchTrailersAsyncTask.OnTaskCompleted() {
+        @Override
+        public void onFetchTrailersTaskCompleted(List<Trailer> trailers) {
+          Toast.makeText(getBaseContext(), "Trailers" + trailers.toString(), Toast.LENGTH_SHORT).show();
+        }
+      };
+
+      // Execute task
+      FetchTrailersAsyncTask trailerTask = new FetchTrailersAsyncTask(trailerCompleted);
+      trailerTask.execute(id);
+    }
   }
 
 }

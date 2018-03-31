@@ -1,8 +1,5 @@
 package com.novembergave.popularmovies;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,6 +18,8 @@ import com.novembergave.popularmovies.Preferences.SharedPreferencesUtils;
 import com.novembergave.popularmovies.RecyclerViewUtils.MainAdapter;
 
 import java.util.List;
+
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.isNetworkAvailable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
   private void getMovies(String sortMethod) {
     setViewsVisibility(SHOW_LOADING_VIEW);
 
-    if (isNetworkAvailable()) {
+    if (isNetworkAvailable(this)) {
       // Listener for when AsyncTask is ready to update UI
       FetchMovieAsyncTask.OnTaskCompleted taskCompleted = this::displayResult;
 
@@ -129,12 +128,5 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setVisibility(View.GONE);
         break;
     }
-  }
-
-  private boolean isNetworkAvailable() {
-    ConnectivityManager connectivityManager
-        = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
   }
 }

@@ -1,6 +1,9 @@
 package com.novembergave.popularmovies.NetworkUtils;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -13,6 +16,13 @@ public class UrlUtils {
 
   private final static String LOG_TAG = UrlUtils.class.getSimpleName();
   private static final String API_KEY = BuildConfig.API_KEY;
+
+  public static boolean isNetworkAvailable(Context context) {
+    ConnectivityManager connectivityManager
+        = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
+    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+  }
 
   /**
    * Creates and returns an URL.

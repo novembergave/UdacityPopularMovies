@@ -4,7 +4,7 @@ package com.novembergave.popularmovies.NetworkUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.novembergave.popularmovies.POJO.Trailer;
+import com.novembergave.popularmovies.POJO.Review;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,24 +19,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getTrailersUrl;
+import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.getReviewsUrl;
 
-public class FetchTrailersAsyncTask extends AsyncTask<Long, Void, List<Trailer>> {
+public class FetchReviewsAsyncTask extends AsyncTask<Long, Void, List<Review>> {
 
   public interface OnTaskCompleted {
-    void onFetchTrailersTaskCompleted(List<Trailer> trailers);
+    void onFetchReviewsTaskCompleted(List<Review> reviews);
   }
 
   private final String LOG_TAG = FetchTrailersAsyncTask.class.getSimpleName();
   private final OnTaskCompleted listener;
 
-  public FetchTrailersAsyncTask(OnTaskCompleted listener) {
+  public FetchReviewsAsyncTask(OnTaskCompleted listener) {
     super();
     this.listener = listener;
   }
 
   @Override
-  protected List<Trailer> doInBackground(Long... params) {
+  protected List<Review> doInBackground(Long... params) {
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
 
@@ -44,7 +44,7 @@ public class FetchTrailersAsyncTask extends AsyncTask<Long, Void, List<Trailer>>
     String moviesJsonStr;
 
     try {
-      URL url = getTrailersUrl(params[0]);
+      URL url = getReviewsUrl(params[0]);
 
       // Start connecting to get JSON
       urlConnection = (HttpURLConnection) url.openConnection();
@@ -101,47 +101,47 @@ public class FetchTrailersAsyncTask extends AsyncTask<Long, Void, List<Trailer>>
   /**
    * Extracts data from the JSON object and returns an Arraylist of movie objects.
    */
-  private List<Trailer> parseJson(String moviesJsonStr) throws JSONException {
+  private List<Review> parseJson(String reviewsJsonStr) throws JSONException {
     // JSON tags
     final String TAG_RESULTS = "results";
     final String TAG_ID = "id";
-    final String TAG_KEY = "key";
-    final String TAG_NAME = "name";
-    final String TAG_SITE = "site";
+    final String TAG_AUTHOR = "author";
+    final String TAG_CONTENT = "content";
+    final String TAG_URL = "url";
 
-    // Get the array containing the trailers found
-    JSONObject trailerJson = new JSONObject(moviesJsonStr);
-    JSONArray resultsArray = trailerJson.getJSONArray(TAG_RESULTS);
+    // Get the array containing the reviews found
+    JSONObject moviesJson = new JSONObject(reviewsJsonStr);
+    JSONArray resultsArray = moviesJson.getJSONArray(TAG_RESULTS);
 
-    // Create arraylist of Trailer objects that stores data from the JSON string
-    List<Trailer> trailers = new ArrayList<>();
+    // Create arraylist of Review objects that stores data from the JSON string
+    List<Review> reviews = new ArrayList<>();
 
-    // Loop through trailers and get data
+    // Loop through reviews and get data
     for (int i = 0; i < resultsArray.length(); i++) {
       // Initialize each object before it can be used
-      Trailer trailer = new Trailer();
+      Review review = new Review();
 
       // Object contains all tags we're looking for
-      JSONObject movieInfo = resultsArray.getJSONObject(i);
+      JSONObject reviewJson = resultsArray.getJSONObject(i);
 
-      // Store data in trailer object
-      trailer.setId(movieInfo.getString(TAG_ID));
-      trailer.setKey(movieInfo.getString(TAG_KEY));
-      trailer.setName(movieInfo.getString(TAG_NAME));
-      trailer.setSite(movieInfo.getString(TAG_SITE));
+      // Store data in review object
+      review.setId(reviewJson.getString(TAG_ID));
+      review.setAuthor(reviewJson.getString(TAG_AUTHOR));
+      review.setContent(reviewJson.getString(TAG_CONTENT));
+      review.setUrl(reviewJson.getString(TAG_URL));
 
       // Add this to the list
-      trailers.add(trailer);
+      reviews.add(review);
     }
 
-    return trailers;
+    return reviews;
   }
 
   @Override
-  protected void onPostExecute(List<Trailer> movies) {
-    super.onPostExecute(movies);
+  protected void onPostExecute(List<Review> reviews) {
+    super.onPostExecute(reviews);
 
     // Notify UI
-    listener.onFetchTrailersTaskCompleted(movies);
+    listener.onFetchReviewsTaskCompleted(reviews);
   }
 }

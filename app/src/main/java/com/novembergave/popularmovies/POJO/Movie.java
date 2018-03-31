@@ -107,12 +107,14 @@ public class Movie implements Parcelable {
   public Movie() {
   }
 
-  private Movie(Parcel in) {
+  protected Movie(Parcel in) {
+    id = in.readLong();
     title = in.readString();
     posterPath = in.readString();
     overview = in.readString();
     averageVote = in.readDouble();
     releaseDate = in.readString();
+    hasVideo = in.readByte() != 0x00;
   }
 
   @Override
@@ -122,11 +124,13 @@ public class Movie implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
+    dest.writeLong(id);
     dest.writeString(title);
     dest.writeString(posterPath);
     dest.writeString(overview);
     dest.writeDouble(averageVote);
     dest.writeString(releaseDate);
+    dest.writeByte((byte) (hasVideo ? 0x01 : 0x00));
   }
 
   @SuppressWarnings("unused")

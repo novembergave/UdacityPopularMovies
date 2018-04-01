@@ -58,10 +58,18 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   private int maxScrollSize;
   private boolean isImageHidden;
   private Movie movie;
+  private Uri uri;
 
   public static Intent launchDetailActivity(Context context, Movie movie) {
     Intent intent = new Intent(context, DetailActivity.class);
     intent.putExtra(EXTRA_MOVIE, movie);
+    return intent;
+  }
+
+  public static Intent launchDetailActivity(Context context, Movie movie, Uri uri) {
+    Intent intent = new Intent(context, DetailActivity.class);
+    intent.putExtra(EXTRA_MOVIE, movie);
+    intent.setData(uri);
     return intent;
   }
 
@@ -91,6 +99,8 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     ratingBar = findViewById(R.id.detail_rating);
     trailersHolder = findViewById(R.id.detail_trailer_holder);
     reviewsHolder = findViewById(R.id.detail_review_holder);
+
+    uri = getIntent().getData();
 
     setUpView();
   }
@@ -243,7 +253,11 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     // Update UI to show it is saved
     fab.setSelected(!fab.isSelected());
     // Save to SQLite database
-    addToDb();
+    if (uri == null) {
+      addToDb();
+    } else {
+      removeFromDb();
+    }
   }
 
   private void addToDb() {
@@ -256,9 +270,18 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     values.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
     Uri newUri = getContentResolver().insert(MovieEntry.CONTENT_URI, values);
     if (newUri == null) {
-      Toast.makeText(this, getString(R.string.error, movie.getTitle()), Toast.LENGTH_SHORT).show();
+      Toast.makeText(this, getString(R.string.error_inserting, movie.getTitle()), Toast.LENGTH_SHORT).show();
     } else {
       Toast.makeText(this, getString(R.string.added_to_favourites), Toast.LENGTH_SHORT).show();
     }
+  }
+
+  private void removeFromDb() {
+      int rowsDeleted = getContentResolver().delete(uri, null, null);
+      if (rowsDeleted == 0) {
+        Toast.makeText(this, getString(R.string.error_deleting, movie.getTitle()), Toast.LENGTH_SHORT).show();
+      } else {
+        Toast.makeText(this, getString(R.string.removed_from_favourites), Toast.LENGTH_SHORT).show();
+      }
   }
 }

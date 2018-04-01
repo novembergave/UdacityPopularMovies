@@ -12,6 +12,7 @@
     <string name="favourite">Favourite</string>
     <string name="favourites">Favourites</string>
     <string name="added_to_favourites">Added to Favourites</string>
+    <string name="removed_from_favourites">Removed from Favourites</string>
 
     <string name="release_date">Release date: </string>
     <string name="user_rating">User Rating: </string>
@@ -20,7 +21,8 @@
     <string name="trailers">Trailers: </string>
     <string name="show_more">Show more</string>
 
-    <string name="error">Error inserting %1$s into database</string>
+    <string name="error_inserting">Error inserting %1$s into database</string>
+    <string name="error_deleting">Error deleting %1$s from database</string>
     <string name="imagePath">http://image.tmdb.org/t/p/w185/</string>
 
 </resources>

@@ -91,32 +91,32 @@ public class MovieProvider extends ContentProvider {
   private Uri insertMovie(Uri uri, ContentValues contentValues) {
     long movieId = contentValues.getAsLong(MovieEntry.COLUMN_MOVIE_ID);
     if (movieId < 0) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "movieId"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "movieId"));
     }
 
     String title = contentValues.getAsString(MovieEntry.COLUMN_TITLE);
     if (title == null) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "title"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "title"));
     }
 
     String posterPath = contentValues.getAsString(MovieEntry.COLUMN_POSTER_PATH);
     if (posterPath == null) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "posterPath"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "posterPath"));
     }
 
     String overview = contentValues.getAsString(MovieEntry.COLUMN_OVERVIEW);
     if (overview == null) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "overview"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "overview"));
     }
 
     Double averageVote = contentValues.getAsDouble(MovieEntry.COLUMN_AVERAGE_VOTE);
     if (averageVote == null) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "averageVote"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "averageVote"));
     }
 
     String releaseDate = contentValues.getAsString(MovieEntry.COLUMN_RELEASE_DATE);
     if (releaseDate == null) {
-      throw new IllegalArgumentException(getContext().getString(R.string.error, "releaseDate"));
+      throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "releaseDate"));
     }
 
     // Get writeable database
@@ -149,7 +149,7 @@ public class MovieProvider extends ContentProvider {
         rowsDeleted = database.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
         break;
       case MOVIE_ID:
-        selection = MovieEntry._ID + "=?";
+        selection = MovieEntry.COLUMN_MOVIE_ID + "=?";
         selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
         rowsDeleted = database.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
         break;
@@ -184,41 +184,41 @@ public class MovieProvider extends ContentProvider {
     if (values.containsKey(MovieEntry.COLUMN_MOVIE_ID)) {
       long movieId = values.getAsLong(MovieEntry.COLUMN_MOVIE_ID);
       if (movieId < 0) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "movieId"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "movieId"));
       }
     }
     if (values.containsKey(MovieEntry.COLUMN_TITLE)) {
       String title = values.getAsString(MovieEntry.COLUMN_TITLE);
       if (title == null) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "title"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "title"));
       }
     }
 
     if (values.containsKey(MovieEntry.COLUMN_POSTER_PATH)) {
       String posterPath = values.getAsString(MovieEntry.COLUMN_POSTER_PATH);
       if (posterPath == null) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "posterPath"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "posterPath"));
       }
     }
 
     if (values.containsKey(MovieEntry.COLUMN_OVERVIEW)) {
       String overview = values.getAsString(MovieEntry.COLUMN_OVERVIEW);
       if (overview == null) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "overview"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "overview"));
       }
     }
 
     if (values.containsKey(MovieEntry.COLUMN_AVERAGE_VOTE)) {
       Double averageVote = values.getAsDouble(MovieEntry.COLUMN_AVERAGE_VOTE);
       if (averageVote == null && averageVote < 0) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "averageVote"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "averageVote"));
       }
     }
 
     if (values.containsKey(MovieEntry.COLUMN_RELEASE_DATE)) {
       String releaseDate = values.getAsString(MovieEntry.COLUMN_RELEASE_DATE);
       if (releaseDate == null) {
-        throw new IllegalArgumentException(getContext().getString(R.string.error, "releaseDate"));
+        throw new IllegalArgumentException(getContext().getString(R.string.error_inserting, "releaseDate"));
       }
     }
 

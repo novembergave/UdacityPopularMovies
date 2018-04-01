@@ -1,5 +1,6 @@
 package com.novembergave.popularmovies;
 
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     recyclerView = findViewById(R.id.main_recycler_view);
     recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     adapter = new MainAdapter(this::openDetailView);
-    cursorAdapter = new MainCursorAdapter(this::openDetailView);
+    cursorAdapter = new MainCursorAdapter(this::openDetailViewWithUri);
 
     loadMovies();
   }
@@ -106,6 +107,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
   private void openDetailView(Movie movie) {
     startActivity(DetailActivity.launchDetailActivity(this, movie));
+  }
+
+  private void openDetailViewWithUri(Movie movie) {
+    Uri currentAlpacassoUri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movie.getId());
+    startActivity(DetailActivity.launchDetailActivity(this, movie, currentAlpacassoUri));
   }
 
   private void fetchMovies(String sortMethod) {

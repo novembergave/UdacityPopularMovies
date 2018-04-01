@@ -28,5 +28,9 @@ public class MovieContract {
     public final static String COLUMN_OVERVIEW = "overview";
     public final static String COLUMN_AVERAGE_VOTE = "averagevote";
     public final static String COLUMN_RELEASE_DATE = "releasedate";
+
+    public static String getMovieId(Uri uri) {
+      return uri.getPathSegments().get(1);
+    }
   }
 }

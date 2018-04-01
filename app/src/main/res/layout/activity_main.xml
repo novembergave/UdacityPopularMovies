@@ -55,6 +55,35 @@
 
     </LinearLayout>
 
+    <LinearLayout
+            android:id="@+id/main_empty_view"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+        <ImageView
+                android:layout_gravity="center"
+                android:layout_height="84dp"
+                android:layout_margin="8dp"
+                android:layout_width="84dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_favorite_border_24dp"
+                />
+
+        <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/nothing_saved"
+                android:gravity="center"
+                />
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
             android:id="@+id/main_recycler_view"
             android:layout_height="match_parent"

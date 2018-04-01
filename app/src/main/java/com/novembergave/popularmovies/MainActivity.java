@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
   private static final int SHOW_LOADING_VIEW = 0;
   private static final int SHOW_ERROR_VIEW = 1;
   private static final int SHOW_RESULT_VIEW = 2;
+  private static final int SHOW_EMPTY_VIEW = 3;
 
   private static final int ID_MOVIES_LOADER = 33;
 
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
   private ProgressBar progressBar;
   private MainAdapter adapter;
   private View errorView;
+  private View emptyView;
   private MainCursorAdapter cursorAdapter;
 
   @Override
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
   private void openSettingsDialog() {
     PreferenceDialog dialog = new PreferenceDialog();
-    dialog.setPreferenceListener(() -> getMovies(getSortMethod()));
+    dialog.setPreferenceListener(this::loadMovies);
     dialog.show(getFragmentManager(), "dialog");
   }
 
@@ -73,31 +75,40 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     setContentView(R.layout.activity_main);
 
     progressBar = findViewById(R.id.main_progress_bar);
+    emptyView = findViewById(R.id.main_empty_view);
     errorView = findViewById(R.id.main_error_view);
     Button retryButton = findViewById(R.id.main_retry_button);
-    retryButton.setOnClickListener(click -> getMovies(getSortMethod()));
+    retryButton.setOnClickListener(click -> loadMovies());
 
     recyclerView = findViewById(R.id.main_recycler_view);
     recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     adapter = new MainAdapter(this::openDetailView);
-    recyclerView.setAdapter(adapter);
-
     cursorAdapter = new MainCursorAdapter(this::openDetailView);
 
-    getMovies(getSortMethod());
+    loadMovies();
   }
 
   private String getSortMethod() {
     return SharedPreferencesUtils.getSortingPreference(this);
   }
 
+  private void loadMovies() {
+    setViewsVisibility(SHOW_LOADING_VIEW);
+    String sortMethod = getSortMethod();
+    if (sortMethod.equals(SharedPreferencesUtils.PREF_SORTING_FAVOURITES)) {
+      getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, null, this);
+      recyclerView.setAdapter(cursorAdapter);
+    } else {
+      recyclerView.setAdapter(adapter);
+      fetchMovies(sortMethod);
+    }
+  }
+
   private void openDetailView(Movie movie) {
     startActivity(DetailActivity.launchDetailActivity(this, movie));
   }
 
-  private void getMovies(String sortMethod) {
-    setViewsVisibility(SHOW_LOADING_VIEW);
-
+  private void fetchMovies(String sortMethod) {
     if (isNetworkAvailable(this)) {
       // Listener for when AsyncTask is ready to update UI
       FetchMovieAsyncTask.OnTaskCompleted taskCompleted = this::displayResult;
@@ -124,17 +135,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     switch (viewToShow) {
       case SHOW_LOADING_VIEW:
         progressBar.setVisibility(View.VISIBLE);
+        emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         break;
       case SHOW_RESULT_VIEW:
         progressBar.setVisibility(View.GONE);
+        emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+        break;
+      case SHOW_EMPTY_VIEW:
+        progressBar.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+        errorView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
         break;
       default:
       case SHOW_ERROR_VIEW:
         progressBar.setVisibility(View.GONE);
+        emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         break;
@@ -157,12 +177,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
       // If the loader requested is our forecast loader, return the appropriate CursorLoader
       case ID_MOVIES_LOADER:
         // URI for all rows of weather data in our weather table
-        Uri forecastQueryUri = MovieEntry.CONTENT_URI;
+        Uri queryUri = MovieEntry.CONTENT_URI;
         // Sort order: Ascending by date
         String sortOrder = MovieEntry.COLUMN_RELEASE_DATE + " ASC";
 
         return new CursorLoader(this,
-            forecastQueryUri,
+            queryUri,
             projection,
             null,
             null,
@@ -176,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
     cursorAdapter.swapCursor(data);
-    if (data.getCount() != 0) setViewsVisibility(SHOW_RESULT_VIEW);
+    setViewsVisibility(data != null && data.getCount() != 0 ? SHOW_RESULT_VIEW : SHOW_EMPTY_VIEW);
   }
 
   @Override

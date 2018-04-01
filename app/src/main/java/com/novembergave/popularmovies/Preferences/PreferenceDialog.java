@@ -33,9 +33,18 @@ public class PreferenceDialog extends DialogFragment {
     LayoutInflater layoutInflater = getActivity().getLayoutInflater();
     View view = layoutInflater.inflate(R.layout.preferences_dialog, null);
     selectionGroup = view.findViewById(R.id.sort_radio_group);
-    selectionGroup.check(SharedPreferencesUtils.getSortingPreference(getActivity())
-        .equals(SharedPreferencesUtils.PREF_SORTING_POPULARITY) ?
-        R.id.sort_popularity : R.id.sort_number_votes);
+    switch (SharedPreferencesUtils.getSortingPreference(getActivity())) {
+      default:
+      case SharedPreferencesUtils.PREF_SORTING_POPULARITY:
+        selectionGroup.check(R.id.sort_popularity);
+        break;
+      case SharedPreferencesUtils.PREF_SORTING_VOTES:
+        selectionGroup.check(R.id.sort_number_votes);
+        break;
+      case SharedPreferencesUtils.PREF_SORTING_FAVOURITES:
+        selectionGroup.check(R.id.sort_favourites);
+        break;
+    }
 
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder
@@ -51,9 +60,18 @@ public class PreferenceDialog extends DialogFragment {
 
   private void updatePreferences() {
     int checkedRadioButtonId = selectionGroup.getCheckedRadioButtonId();
-    SharedPreferencesUtils.updateSortingPreference(getActivity(), checkedRadioButtonId == R.id.sort_popularity ?
-        SharedPreferencesUtils.PREF_SORTING_POPULARITY :
-        SharedPreferencesUtils.PREF_SORTING_VOTES);
+    switch (checkedRadioButtonId) {
+      default:
+      case R.id.sort_popularity:
+        SharedPreferencesUtils.updateSortingPreference(getActivity(), SharedPreferencesUtils.PREF_SORTING_POPULARITY);
+        break;
+      case R.id.sort_number_votes:
+        SharedPreferencesUtils.updateSortingPreference(getActivity(), SharedPreferencesUtils.PREF_SORTING_VOTES);
+        break;
+      case R.id.sort_favourites:
+        SharedPreferencesUtils.updateSortingPreference(getActivity(), SharedPreferencesUtils.PREF_SORTING_FAVOURITES);
+        break;
+    }
     preferenceListener.show();
   }
 }

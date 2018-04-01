@@ -11,6 +11,7 @@ public class SharedPreferencesUtils {
 
   public static final String PREF_SORTING_POPULARITY = "popularity.desc";
   public static final String PREF_SORTING_VOTES = "vote_average.desc";
+  public static final String PREF_SORTING_FAVOURITES = "favourites.asc";
 
   private static SharedPreferences getSharedPreferences(Context context) {
     return context.getSharedPreferences(KEY, Context.MODE_PRIVATE);

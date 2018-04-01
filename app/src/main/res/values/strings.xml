@@ -9,6 +9,8 @@
     <string name="popularity">Popularity</string>
     <string name="number_of_votes">Number of Votes</string>
     <string name="favourite">Favourite</string>
+    <string name="favourites">Favourites</string>
+
 
     <string name="release_date">Release date: </string>
     <string name="user_rating">User Rating: </string>
@@ -17,5 +19,7 @@
     <string name="trailers">Trailers: </string>
     <string name="show_more">Show more</string>
 
+    <string name="error">Error inserting %1$s into database</string>
+    <string name="imagePath">http://image.tmdb.org/t/p/w185/</string>
 
 </resources>

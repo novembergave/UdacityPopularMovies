@@ -15,8 +15,6 @@ import com.squareup.picasso.Picasso;
 
 public class MainViewHolder extends RecyclerView.ViewHolder {
 
-  private static final String imagePath = "http://image.tmdb.org/t/p/w185/";
-
   private final ImageView imageView;
   private final TextView titleView;
   private final Context context;
@@ -36,7 +34,7 @@ public class MainViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bindTo(Movie movie, MainAdapter.MovieClickListener listener) {
-    Picasso.with(context).load(imagePath + movie.getPosterPath()).into(imageView);
+    Picasso.with(context).load(context.getString(R.string.imagePath) + movie.getPosterPath()).into(imageView);
     titleView.setText(movie.getTitle());
     rootView.setOnClickListener(click -> listener.viewMovie(movie));
   }

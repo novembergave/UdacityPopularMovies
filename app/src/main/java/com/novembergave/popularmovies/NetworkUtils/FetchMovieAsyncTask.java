@@ -145,7 +145,6 @@ public class FetchMovieAsyncTask extends AsyncTask<String, Void, List<Movie>> {
       movie.setOverview(movieInfo.getString(TAG_OVERVIEW));
       movie.setAverageVote(movieInfo.getDouble(TAG_VOTE_AVERAGE));
       movie.setReleaseDate(movieInfo.getString(TAG_RELEASE_DATE));
-      movie.setHasVideo(movieInfo.getBoolean(TAG_VIDEO));
       // Add this to the list
       movies.add(movie);
     }

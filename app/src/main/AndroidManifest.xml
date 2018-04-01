@@ -23,6 +23,11 @@
                 android:theme="@style/AppTheme.NoActionBar"
                 android:parentActivityName=".MainActivity">
         </activity>
+
+        <provider
+                android:name=".Database.MovieProvider"
+                android:authorities="com.novembergave.popularmovies"
+                android:exported="false" />
     </application>
 
 </manifest>

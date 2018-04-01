@@ -11,7 +11,7 @@
     <string name="number_of_votes">Number of Votes</string>
     <string name="favourite">Favourite</string>
     <string name="favourites">Favourites</string>
-
+    <string name="added_to_favourites">Added to Favourites</string>
 
     <string name="release_date">Release date: </string>
     <string name="user_rating">User Rating: </string>

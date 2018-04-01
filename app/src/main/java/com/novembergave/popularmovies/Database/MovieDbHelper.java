@@ -11,12 +11,12 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
   public static final int DATABASE_VERSION = 1;
   private static final String DATABASE_NAME = "inventory.db";
-  public static final int INDEX_MOVIE_ID = 0;
-  public static final int INDEX_TITLE = 1;
-  public static final int INDEX_POSTER_PATH = 2;
-  public static final int INDEX_OVERVIEW = 3;
-  public static final int INDEX_AVERAGE_VOTE = 4;
-  public static final int INDEX_RELEASE_DATE = 5;
+  public static final int INDEX_MOVIE_ID = 1;
+  public static final int INDEX_TITLE = 2;
+  public static final int INDEX_POSTER_PATH = 3;
+  public static final int INDEX_OVERVIEW = 4;
+  public static final int INDEX_AVERAGE_VOTE = 5;
+  public static final int INDEX_RELEASE_DATE = 6;
 
 
   public MovieDbHelper(Context context) {

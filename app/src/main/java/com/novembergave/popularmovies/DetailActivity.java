@@ -1,5 +1,6 @@
 package com.novembergave.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.novembergave.popularmovies.NetworkUtils.FetchReviewsAsyncTask;
 import com.novembergave.popularmovies.NetworkUtils.FetchTrailersAsyncTask;
@@ -35,6 +37,7 @@ import org.threeten.bp.ZonedDateTime;
 
 import java.util.List;
 
+import static com.novembergave.popularmovies.Database.MovieContract.MovieEntry;
 import static com.novembergave.popularmovies.NetworkUtils.UrlUtils.isNetworkAvailable;
 
 public class DetailActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
@@ -54,6 +57,7 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
 
   private int maxScrollSize;
   private boolean isImageHidden;
+  private Movie movie;
 
   public static Intent launchDetailActivity(Context context, Movie movie) {
     Intent intent = new Intent(context, DetailActivity.class);
@@ -92,7 +96,7 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   }
 
   private void setUpView() {
-    Movie movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
+    movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
     // set title
     layout.setTitle(movie.getTitle());
     // populate the image in both app bar and poster image
@@ -239,5 +243,22 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     // Update UI to show it is saved
     fab.setSelected(!fab.isSelected());
     // Save to SQLite database
+    addToDb();
+  }
+
+  private void addToDb() {
+    ContentValues values = new ContentValues();
+    values.put(MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+    values.put(MovieEntry.COLUMN_TITLE, movie.getTitle());
+    values.put(MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+    values.put(MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+    values.put(MovieEntry.COLUMN_AVERAGE_VOTE, movie.getAverageVote());
+    values.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+    Uri newUri = getContentResolver().insert(MovieEntry.CONTENT_URI, values);
+    if (newUri == null) {
+      Toast.makeText(this, getString(R.string.error, movie.getTitle()), Toast.LENGTH_SHORT).show();
+    } else {
+      Toast.makeText(this, getString(R.string.added_to_favourites), Toast.LENGTH_SHORT).show();
+    }
   }
 }

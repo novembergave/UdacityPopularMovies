@@ -37,6 +37,7 @@ import com.squareup.picasso.Picasso;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.novembergave.popularmovies.Database.MovieContract.MovieEntry;
@@ -46,6 +47,8 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
 
   private static final String EXTRA_MOVIE = "extra_movie";
   private static final int PERCENTAGE_TO_SHOW_IMAGE = 20;
+  private static final String KEY_REVIEWS_LIST = "key_reviews_list";
+  private static final String KEY_TRAILERS_LIST = "key_trailers_list";
 
   private CollapsingToolbarLayout layout;
   private ImageView displayImage;
@@ -61,6 +64,10 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   private boolean isImageHidden;
   private Movie movie;
 
+  // To save state
+  private List<Review> reviews;
+  private List<Trailer> trailers;
+
   public static Intent launchDetailActivity(Context context, Movie movie) {
     Intent intent = new Intent(context, DetailActivity.class);
     intent.putExtra(EXTRA_MOVIE, movie);
@@ -71,6 +78,19 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   public boolean onSupportNavigateUp() {
     onBackPressed();
     return true;
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    // Convert to ArrayList to save state
+    ArrayList<Review> reviewList = new ArrayList<>();
+    reviewList.addAll(reviews);
+    outState.putParcelableArrayList(KEY_REVIEWS_LIST, reviewList);
+    // Convert to ArrayList to save state
+    ArrayList<Trailer> trailerList = new ArrayList<>();
+    trailerList.addAll(trailers);
+    outState.putParcelableArrayList(KEY_TRAILERS_LIST, trailerList);
   }
 
   @Override
@@ -96,6 +116,11 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
 
     // initialise the values
     movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
+    // only restore values if there's instances saved
+    if (savedInstanceState != null) {
+      reviews = savedInstanceState.getParcelableArrayList(KEY_REVIEWS_LIST);
+      trailers = savedInstanceState.getParcelableArrayList(KEY_TRAILERS_LIST);
+    }
 
     setUpFavouriteSelection();
     setUpView();
@@ -131,7 +156,12 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     float averageVote = (float) movie.getAverageVote() / 2;
     ratingBar.setRating(averageVote);
 
-    fetchVideoAndReview(movie.getId());
+    if (reviews != null && trailers != null) {
+      setReviews(reviews);
+      setTrailers(trailers);
+    } else {
+      fetchVideoAndReview(movie.getId());
+    }
   }
 
   private void setUpFavouriteSelection() {
@@ -141,14 +171,20 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   private void fetchVideoAndReview(long id) {
     if (isNetworkAvailable(this)) {
       // Listener for when FetchReviewsAsyncTask is ready to update UI
-      FetchReviewsAsyncTask.OnTaskCompleted taskCompleted = this::setReviews;
+      FetchReviewsAsyncTask.OnTaskCompleted taskCompleted = reviews -> {
+        this.reviews = reviews;
+        setReviews(reviews);
+      };
 
       // Execute task
       FetchReviewsAsyncTask movieTask = new FetchReviewsAsyncTask(taskCompleted);
       movieTask.execute(id);
 
       // Listener for when FetchTrailersAsyncTask is ready to update UI
-      FetchTrailersAsyncTask.OnTaskCompleted trailerCompleted = this::setTrailers;
+      FetchTrailersAsyncTask.OnTaskCompleted trailerCompleted = trailers -> {
+        this.trailers = trailers;
+        setTrailers(trailers);
+      };
 
       // Execute task
       FetchTrailersAsyncTask trailerTask = new FetchTrailersAsyncTask(trailerCompleted);

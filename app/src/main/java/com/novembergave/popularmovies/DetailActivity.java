@@ -97,8 +97,8 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     // initialise the values
     movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
 
-    setUpView();
     setUpFavouriteSelection();
+    setUpView();
   }
 
   private void setUpView() {
@@ -229,6 +229,10 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
+    // The heart is filled if the user adds item to favourites
+    menu.findItem(R.id.favourite).setIcon(fab.isSelected() ?
+        R.drawable.ic_favorite_24dp :
+        R.drawable.ic_favorite_border_24dp);
     if (isImageHidden) {
       menu.findItem(R.id.favourite).setVisible(true);
     }
@@ -237,11 +241,9 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle item selection
     switch (item.getItemId()) {
       case R.id.favourite:
         saveToFavourites();
-        item.setChecked(true); // TODO: This doesn't quite work
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -257,6 +259,7 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     } else {
       removeFromDb();
     }
+    invalidateOptionsMenu();
   }
 
   private void addToDb() {
@@ -291,6 +294,11 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
         MovieEntry.COLUMN_MOVIE_ID    // we only care about the movie id
     };
     Cursor query = getContentResolver().query(uri, projection, null, null, null);
-    return query.getCount() > 0;
+    int count = 0;
+    if (query != null) {
+      count = query.getCount();
+      query.close();
+    }
+    return count > 0;
   }
 }

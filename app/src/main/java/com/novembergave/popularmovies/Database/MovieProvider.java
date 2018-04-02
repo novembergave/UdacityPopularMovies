@@ -51,7 +51,7 @@ public class MovieProvider extends ContentProvider {
             null, null, sortOrder);
         break;
       case MOVIE_ID:
-        selection = MovieEntry._ID + "=?";
+        selection = MovieEntry.COLUMN_MOVIE_ID + "=?";
         selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
         cursor = database.query(MovieEntry.TABLE_NAME, projection, selection, selectionArgs,
             null, null, sortOrder);
@@ -172,7 +172,7 @@ public class MovieProvider extends ContentProvider {
       case MOVIES:
         return updateMovie(uri, contentValues, selection, selectionArgs);
       case MOVIE_ID:
-        selection = MovieEntry._ID + "=?";
+        selection = MovieEntry.COLUMN_MOVIE_ID + "=?";
         selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
         return updateMovie(uri, contentValues, selection, selectionArgs);
       default:

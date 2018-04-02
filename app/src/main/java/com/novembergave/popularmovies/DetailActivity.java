@@ -1,8 +1,10 @@
 package com.novembergave.popularmovies;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -58,18 +60,10 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   private int maxScrollSize;
   private boolean isImageHidden;
   private Movie movie;
-  private Uri uri;
 
   public static Intent launchDetailActivity(Context context, Movie movie) {
     Intent intent = new Intent(context, DetailActivity.class);
     intent.putExtra(EXTRA_MOVIE, movie);
-    return intent;
-  }
-
-  public static Intent launchDetailActivity(Context context, Movie movie, Uri uri) {
-    Intent intent = new Intent(context, DetailActivity.class);
-    intent.putExtra(EXTRA_MOVIE, movie);
-    intent.setData(uri);
     return intent;
   }
 
@@ -100,13 +94,14 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     trailersHolder = findViewById(R.id.detail_trailer_holder);
     reviewsHolder = findViewById(R.id.detail_review_holder);
 
-    uri = getIntent().getData();
+    // initialise the values
+    movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
 
     setUpView();
+    setUpFavouriteSelection();
   }
 
   private void setUpView() {
-    movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
     // set title
     layout.setTitle(movie.getTitle());
     // populate the image in both app bar and poster image
@@ -137,6 +132,10 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
     ratingBar.setRating(averageVote);
 
     fetchVideoAndReview(movie.getId());
+  }
+
+  private void setUpFavouriteSelection() {
+    fab.setSelected(isSavedInDb());
   }
 
   private void fetchVideoAndReview(long id) {
@@ -252,8 +251,8 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   private void saveToFavourites() {
     // Update UI to show it is saved
     fab.setSelected(!fab.isSelected());
-    // Save to SQLite database
-    if (uri == null) {
+    // Save to SQLite database if it's saved, else remove from DB
+    if (!isSavedInDb()) {
       addToDb();
     } else {
       removeFromDb();
@@ -277,11 +276,21 @@ public class DetailActivity extends AppCompatActivity implements AppBarLayout.On
   }
 
   private void removeFromDb() {
-      int rowsDeleted = getContentResolver().delete(uri, null, null);
-      if (rowsDeleted == 0) {
-        Toast.makeText(this, getString(R.string.error_deleting, movie.getTitle()), Toast.LENGTH_SHORT).show();
-      } else {
-        Toast.makeText(this, getString(R.string.removed_from_favourites), Toast.LENGTH_SHORT).show();
-      }
+    Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movie.getId());
+    int rowsDeleted = getContentResolver().delete(uri, null, null);
+    if (rowsDeleted == 0) {
+      Toast.makeText(this, getString(R.string.error_deleting, movie.getTitle()), Toast.LENGTH_SHORT).show();
+    } else {
+      Toast.makeText(this, getString(R.string.removed_from_favourites), Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  private boolean isSavedInDb() {
+    Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movie.getId());
+    String[] projection = {
+        MovieEntry.COLUMN_MOVIE_ID    // we only care about the movie id
+    };
+    Cursor query = getContentResolver().query(uri, projection, null, null, null);
+    return query.getCount() > 0;
   }
 }
